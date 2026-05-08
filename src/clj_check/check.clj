@@ -12,7 +12,8 @@
     (println "Compiling namespace" ns))
   (try
     (binding [*warn-on-reflection* true]
-      (load (file-for ns)))
+      (when-not (contains? (loaded-libs) ns)
+        (load (file-for ns))))
     (catch ExceptionInInitializerError e
       (doto e .printStackTrace))))
 
@@ -20,14 +21,14 @@
   [source-paths]
   (let [namespaces (bultitude/namespaces-on-classpath
                     :classpath (map io/file source-paths)
-                    :ignore-unreadable? false)
-        failures   (count
-                    (sequence
-                     (comp (map check-ns) (remove nil?))
-                     namespaces))]
+                    :ignore-unreadable? false)]
+    (count
+      (sequence
+        (comp (map check-ns) (remove nil?))
+        namespaces))))
+
+(defn -main [& source-paths]
+  (let [failures (check (or (seq source-paths) ["src"]))]
     (shutdown-agents)
     (when-not (zero? failures)
       (System/exit failures))))
-
-(defn -main [& source-paths]
-  (check (or (seq source-paths) ["src"])))

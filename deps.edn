@@ -1,4 +1,10 @@
 {:paths ["src"]
  :deps
- {org.clojure/clojure    {:mvn/version "1.10.1"}
-  timofreiberg/bultitude {:mvn/version "0.3.1"}}}
+ {org.clojure/clojure    {:mvn/version "1.12.4"}
+  timofreiberg/bultitude {:mvn/version "0.3.1"}}
+
+ :aliases
+ {:test {:extra-paths ["test"]
+         :extra-deps  {io.github.cognitect-labs/test-runner
+                       {:git/tag "v0.5.1" :git/sha "dfb30dd"}}
+         :exec-fn     cognitect.test-runner.api/test}}}
